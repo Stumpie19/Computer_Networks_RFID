@@ -23,7 +23,7 @@ try:
         #Get name of attendee from database.py
         lcd.text(name1, 2)
     
-    else
+    else:
         lcd.text("Good-Bye", 1)
 
         #Get name of attendee from database.py
