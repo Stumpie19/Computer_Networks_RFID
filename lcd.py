@@ -1,34 +1,49 @@
 
 from signal import signal, SIGTERM, SIGHUP, pause
 from database import get_dataname, get_dataenter
+import RFID_Driver
+import RPi.GPIO as GPIO
+import time
 
 #From raspberry pi lcd library
 from rpi_lcd import LCD
-uid = "1"
-get_dataname(uid)
+
 
 lcd = LCD()
 def safe_exit(signum, frame):
     exit(1)
 try:
-    signal(SIGTERM, safe_exit)
-    signal(SIGHUP, safe_exit)
+    while True:
+        signal(SIGTERM, safe_exit)
+        signal(SIGHUP, safe_exit)
 
-    name1 = get_dataname(uid)
-    enter = get_dataenter(uid)
-    if enter == 1:
+        reader = RFID_Driver.RFID_READER()
 
-        lcd.text("Welcome,", 1)
+        try:
+            uid = reader.get_id()
+            print(uid)
+        finally:
+            GPIO.cleanup()
 
-        #Get name of attendee from database.py
-        lcd.text(name1, 2)
-    
-    else:
-        lcd.text("Good-Bye", 1)
+        name = get_dataname(uid)
+        enter = get_dataenter(uid)
+        print(str(enter))
+        if enter == 1:
 
-        #Get name of attendee from database.py
-        lcd.text(name1, 2)
-    pause()
+            lcd.text("Welcome,", 1)
+
+            #Get name of attendee from database.py
+            lcd.text(str(name), 2)
+        
+        elif enter == 0:
+            lcd.text("Good-Bye", 1)
+
+            #Get name of attendee from database.py
+            lcd.text(str(name), 2)
+        else:
+            lcd.text("Error", 1)
+            lcd.text(str(name), 2)
+        time.sleep(2)
 except KeyboardInterrupt:
     pass
 finally:

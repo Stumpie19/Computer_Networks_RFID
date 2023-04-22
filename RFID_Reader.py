@@ -22,18 +22,18 @@ class RFID:
     
     #Command Constants for the PICC (RFID Tag)
     COMMAND_PICC_REQA = 0x26 #Request Command
-    COMMAND_WUPA = 0x52 #Wake-Up Command
-    PICC_ANTICOLL = 0x9320 #Anticollision CL1 Command
-    PICC_SElECT = 0x9370 #Select CL1 Command (Only CL1 commands needed since uid of tags used are 4 bytes)
-    PICC_HALT = 0x5000 #Halt Command
-    PICC_AUTHENT1A = 0x60 #Authentication with Key A Command
-    PICC_AUTHENT1B = 0x61 #Authentication with Key B 
-    PICC_READ = 0x30 #MIFARE Read Command
-    PICC_WRITE = 0xA0 #MIFARE Write Command
-    PICC_DECREMENT = 0xC0 #MIFARE Decrement Command
-    PICC_INCREMENT = 0xC1 #MIFARE Increment
-    PICC_RESTORE = 0xC2 #MIFARE Restore Command
-    PICC_TRANSFER = 0xB0 #MIFARE Transfer Command
+    COMMAND_PICC_WUPA = 0x52 #Wake-Up Command
+    COMMAND_PICC_ANTICOLLISION = [0x93,0x20] #Anticollision CL1 Command
+    COMMAND_PICC_SELECT = [0x93,0x70] #Select CL1 Command (Only CL1 commands needed since uid of tags used are 4 bytes)
+    COMMAND_PICC_HALT = [0x50,0x00] #Halt Command
+    COMMAND_PICC_AUTHENT1A = 0x60 #Authentication with Key A Command
+    COMMAND_PICC_AUTHENT1B = 0x61 #Authentication with Key B 
+    COMMAND_PICC_READ = 0x30 #MIFARE Read Command
+    COMMAND_PICC_WRITE = 0xA0 #MIFARE Write Command
+    COMMAND_PICC_DECREMENT = 0xC0 #MIFARE Decrement Command
+    COMMAND_PICC_INCREMENT = 0xC1 #MIFARE Increment
+    COMMAND_PICC_RESTORE = 0xC2 #MIFARE Restore Command
+    COMMAND_PICC_TRANSFER = 0xB0 #MIFARE Transfer Command
     
     
     #Status Constants
@@ -153,7 +153,7 @@ class RFID:
        
     #Soft Reset the MFRC522 Module 
     def reset(self):
-        self.writeRFID(self.CommandReg, self.COMMAND_SOFT_RESET)
+        self.writeRFID(self.CommandReg, self.COMMAND_SOFT_RESET)#send reset command to MFRC522
 
     #Write to a Register on the MFRC522 module
     def writeRFID(self, addr, val):
@@ -193,16 +193,14 @@ class RFID:
     
     #Sends the AnitCollison PICC Command to PICC for PICC to respond with its uid. 
     def anticollisionPICC(self):
-        backData = []
-        uidCheck = 0
-        Command = []
-        Command.append(self.PICC_ANTICOLL)#Add Anitcollision command to Command
-        #serNum.append(0x20)
-
+        backData = []#for holding data from PICC
+        uidCheck = 0#for checking 
+        Command = self.COMMAND_PICC_ANTICOLLISION#set command to anticollision command
+        
         self.writeRFID(self.BitFramingReg, 0x00)#Reset the bitframing Register
 
-        (status, backData, backBits) = self.sendToPICC(self.COMMAND_TRANSCIEVE, Command)#Send Command to PICC
-
+        (status, backData, backBits) = self.sendToPICC(Command)#Send Command to PICC
+    
         if (status == self.STATUS_OK):#if status is okay 
             i = 0
             if len(backData) == 5:#if length of uid is 5
@@ -212,25 +210,19 @@ class RFID:
                     status = self.STATUS_ERROR
             else: #if length of uid is not 5
                 status = self.STATUS_ERROR
-
+        
         return (status, backData)
     
     #Send data to PICC using a command for the MFRC522
-    def sendToPICC(self, command, sendData):
-        backData = []
-        backLen = 0
-        status = self.STATUS_ERROR
-        irqEn = 0x00
-        waitIRq = 0x00
-        lastBits = None
-        n = 0
-
-        #if command == self.COMMAND_MF_AUTH:
-           # irqEn = 0x12
-          #  waitIRq = 0x10
-        if command == self.COMMAND_TRANSCIEVE:
-            irqEn = 0x77
-            waitIRq = 0x30
+    def sendToPICC(self, sendData):
+        command = self.COMMAND_TRANSCIEVE#set the command to transcieve command
+        backData = [] #for holding data from PICC
+        backLen = 0  #amount of bits of data from PICC
+        status = self.STATUS_ERROR #set status to error
+        irqEn = 0x77 #Bit to set in comIRQReg before transcieving command
+        waitIRq = 0x30 #Active bits of comIRQReg if command suggestively sent to PICC
+        lastBits = None #amount of bits of data used in last byte
+        n = 0 #variable for reading from registers
 
         self.writeRFID(self.ComIrqReg, irqEn | 0x80)#Set bits in interrupt request bits (7 bit is indicate marked bits are set)
         self.ClearBitMask(self.ComIrqReg, 0x80)#Clear bit 7 to indicate marked bits are cleared in interrupt request register
@@ -244,10 +236,9 @@ class RFID:
 
         self.writeRFID(self.CommandReg, command)#Execute passed command
 
-        if command == self.COMMAND_TRANSCIEVE:
-            self.SetBitMask(self.BitFramingReg, 0x80)#Set Bit 7 of BitFramingReg to active to start transmission of data to PICC
+        self.SetBitMask(self.BitFramingReg, 0x80)#Set Bit 7 of BitFramingReg to active to start transmission of data to PICC
 
-        i = 2500
+        i = 2500#counter for exit loop
         while True:
             n = self.readRFID(self.ComIrqReg)#read comIrqReg  
             i -= 1
@@ -263,21 +254,20 @@ class RFID:
                 if n & irqEn & 0x01:#Check Error if timer got to 0 
                     status = self.STATUS_ERROR
 
-                if command == self.COMMAND_TRANSCIEVE:#If Command Transieve Read FIFO Data Buffer for data from PICC
-                    n = self.readRFID(self.FIFOLevelReg)#get number of bits stored in the FIFO Data Buffer
-                    lastBits = self.readRFID(self.ControlReg) & 0x07#get the number of valid bits in the last recived byte from the control reg (stored in bits 0-2)
-                    if lastBits != 0:#Check if last bit is at end of byte
-                        backLen = (n - 1) * 8 + lastBits#set bit length if last bit is not at the end of a byte
-                    else:
-                        backLen = n * 8#set bit length if last bit is at the end of a byte
+                n = self.readRFID(self.FIFOLevelReg)#get number of bits stored in the FIFO Data Buffer
+                lastBits = self.readRFID(self.ControlReg) & 0x07#get the number of valid bits in the last recived byte from the control reg (stored in bits 0-2)
+                if lastBits != 0:#Check if last bit is at end of byte
+                    backLen = (n - 1) * 8 + lastBits#set bit length if last bit is not at the end of a byte
+                else:
+                    backLen = n * 8#set bit length if last bit is at the end of a byte
 
-                    if n == 0:#if byte length is 0 then set to 1
-                        n = 1
-                    if n > self.MAX_LEN:#if byte legth is greater than Max length used then set byte length to data used
-                        n = self.MAX_LEN
+                if n == 0:#if byte length is 0 then set to 1
+                    n = 1
+                if n > self.MAX_LEN:#if byte legth is greater than Max length used then set byte length to data used
+                    n = self.MAX_LEN
 
-                    for i in range(n):#read the correctnumber of bytes from the FIFO Data Buffer 
-                        backData.append(self.readRFID(self.FIFODataReg))#put data from FIFO Data Buffer in backData
+                for i in range(n):#read the correctnumber of bytes from the FIFO Data Buffer 
+                    backData.append(self.readRFID(self.FIFODataReg))#put data from FIFO Data Buffer in backData
             else:
                 status = self.STATUS_ERROR
 
@@ -285,18 +275,17 @@ class RFID:
     
     #Request command for PICC. Invites PICCs in state IDLE to go to READY and prepare for anticollision or selection.
     def requestPICC(self):
-        status = None
-        backBits = None
-        Command= []
+        status = None #status variable
+        backBits = None #amount of bits of data from PICC
+        Command= [] #for holding command
         Command.append(self.COMMAND_PICC_REQA)#Add Request Command to invite PICC in idle state to move to ready state 
 
         self.writeRFID(self.BitFramingReg, 0x07)#Set TxLastBits[2:0] to not transmit last byte
         
-        (status, backData, backBits) = self.sendToPICC(self.COMMAND_TRANSCIEVE, Command)#Send Request Command to PICCs
+        (status, backData, backBits) = self.sendToPICC(Command)#Send Request Command to PICCs
 
         if ((status != self.STATUS_OK) | (backBits != 0x10)):#Check for Error
             status = self.STATUS_ERROR
-
         return (status, backBits)
         
     

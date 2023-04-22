@@ -1,17 +1,13 @@
 #!/usr/bin/env python
-
-from . import RFID_Reader
+import RFID_Reader
 import RPi.GPIO as GPIO
-  
+     
 class RFID_READER:
 
   READER = None
   
-  #KEY = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
-  #BLOCK_ADDRS = [8, 9, 10]
-  
   def __init__(self):
-    self.READER = RFID()
+    self.READER = RFID_Reader.RFID()
     
   #get uid of PICC
   def get_id(self):
@@ -22,6 +18,7 @@ class RFID_READER:
 
   #read uid of PICC
   def read_uid(self):
+      
       (status, TagType) = self.READER.requestPICC()#Send request command to PICC to move them from idle to ready state
       if status != self.READER.STATUS_OK:#Error Check
           return None
