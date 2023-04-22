@@ -1,9 +1,10 @@
 
 from signal import signal, SIGTERM, SIGHUP, pause
-from database import get_dataname, get_dataenter
+from database import get_dataname, get_dataenter, update_timestamp_in, update_timestamp_out, close_database
 import RFID_Driver
 import RPi.GPIO as GPIO
 import time
+from timestamp import localtime
 
 #From raspberry pi lcd library
 from rpi_lcd import LCD
@@ -29,6 +30,7 @@ try:
         enter = get_dataenter(uid)
         print(str(enter))
         if enter == 1:
+            update_timestamp_in(uid, localtime())
 
             lcd.text("Welcome,", 1)
 
@@ -36,6 +38,8 @@ try:
             lcd.text(str(name), 2)
         
         elif enter == 0:
+            update_timestamp_out(uid, localtime())
+
             lcd.text("Good-Bye", 1)
 
             #Get name of attendee from database.py
@@ -48,3 +52,4 @@ except KeyboardInterrupt:
     pass
 finally:
     lcd.clear()
+    close_database()

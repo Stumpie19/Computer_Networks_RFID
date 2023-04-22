@@ -19,7 +19,7 @@ def add_data(uid,name,enter,timestamp):
         statement = "INSERT DATA IN THE FOLLOWING ORDER: (uid, name, enter, timestamp) (%c, %c, %i, %c)"
         data = (uid, name, enter, timestamp)
         cursor.execute(statement, data)
-        cursor.commit()
+        connection.commit()
         print("Successfully added entry to database")
     except database.Error as e:
         print(f"Error adding entry to database: {e}")
@@ -66,6 +66,30 @@ def get_dataenter(uid):
     except database.Error as e:
         print(f"Error retrieving entry from database: {e}")
         return -1
+
+def delete_data(uid):
+	try:
+		statement = f"DELETE FROM attendance WHERE uid = '{uid}'"
+		cursor.execute(statement)
+		connection.commit()
+	except database.Error as e:
+		print(f"Error deleting entry from database: {e}")
+
+def update_timestamp_in(uid, timestamp_in):
+	try:
+		statement = f"UPDATE attendance SET timestamp_in = '{timestamp_in}' WHERE uid = '{uid}'"
+		cursor.execute(statement)
+		connection.commit()
+	except database.Error as e:
+		print(f"Error updating timestamp in database: {e}")
+
+def update_timestamp_out(uid, timestamp_out):
+	try:
+		statement = f"UPDATE attendance SET timestamp_out = '{timestamp_out}' WHERE uid = '{uid}'"
+		cursor.execute(statement)
+		connection.commit()
+	except database.Error as e:
+		print(f"Error updating timestamp in database: {e}")
 
 def close_database():
     connection.close()
