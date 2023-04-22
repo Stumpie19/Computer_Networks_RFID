@@ -42,9 +42,6 @@ $num_days = cal_days_in_month(CAL_GREGORIAN, $current_month, $current_year);
             <li class="nav-item">
                 <a href="attendance.php" class="nav-link active">View Attendance</a>
             </li>
-            <li class="nav-item">
-                <a href="users.php" class="nav-link">View Users</a>
-            </li>
         </ul>
     </nav>
     <div class="container">
