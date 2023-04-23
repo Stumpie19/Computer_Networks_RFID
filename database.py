@@ -68,28 +68,29 @@ def get_dataenter(uid):
         return -1
 
 def delete_data(uid):
-	try:
-		statement = f"DELETE FROM attendance WHERE uid = '{uid}'"
-		cursor.execute(statement)
-		connection.commit()
-	except database.Error as e:
-		print(f"Error deleting entry from database: {e}")
+    try:
+        statement = f"DELETE FROM attendance WHERE uid = '{uid}'"
+        cursor.execute(statement)
+        connection.commit()
+    except database.Error as e:
+        print(f"Error deleting entry from database: {e}")
 
 def update_timestamp_in(uid, timestamp_in):
-	try:
-		statement = f"UPDATE attendance SET timestamp_in = '{timestamp_in}' WHERE uid = '{uid}'"
-		cursor.execute(statement)
-		connection.commit()
-	except database.Error as e:
-		print(f"Error updating timestamp in database: {e}")
+    try:
+        #print(timestamp_in)
+        statement = f"UPDATE attendance SET timestamp_in = '{timestamp_in}' WHERE uid = '{uid}'"
+        cursor.execute(statement)
+        connection.commit()
+    except database.Error as e:
+        print(f"Error updating timestamp in database: {e}")
 
 def update_timestamp_out(uid, timestamp_out):
-	try:
-		statement = f"UPDATE attendance SET timestamp_out = '{timestamp_out}' WHERE uid = '{uid}'"
-		cursor.execute(statement)
-		connection.commit()
-	except database.Error as e:
-		print(f"Error updating timestamp in database: {e}")
+    try:
+        statement = f"UPDATE attendance SET timestamp_out = '{timestamp_out}' WHERE uid = '{uid}'"
+        cursor.execute(statement)
+        connection.commit()
+    except database.Error as e:
+        print(f"Error updating timestamp in database: {e}")
 
 def close_database():
     connection.close()

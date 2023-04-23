@@ -29,16 +29,16 @@ try:
         name = get_dataname(uid)
         enter = get_dataenter(uid)
         print(str(enter))
-        if enter == 1:
-            update_timestamp_in(uid, localtime())
+        if enter == 0:
+            update_timestamp_in(uid, int(time.time()))
 
             lcd.text("Welcome,", 1)
 
             #Get name of attendee from database.py
             lcd.text(str(name), 2)
         
-        elif enter == 0:
-            update_timestamp_out(uid, localtime())
+        elif enter == 1:
+            update_timestamp_out(uid, int(time.time()))
 
             lcd.text("Good-Bye", 1)
 
