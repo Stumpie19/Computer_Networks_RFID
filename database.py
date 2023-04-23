@@ -3,8 +3,6 @@ import mysql.connector as database
 
 from timestamp import localtime
 
-#username = os.environ.get("CNuser")
-#password = os.environ.get("CNpassword")
 
 connection = database.connect(
     user="CNuser",
@@ -14,22 +12,21 @@ connection = database.connect(
 
 cursor = connection.cursor()
 
-def add_data(uid,name,enter,timestamp):
+def add_data(uid,name,enter,timestamp_in, timestamp_out):
     try:
-        statement = "INSERT DATA IN THE FOLLOWING ORDER: (uid, name, enter, timestamp) (%c, %c, %i, %c)"
-        data = (uid, name, enter, timestamp)
-        cursor.execute(statement, data)
+        statement = "INSERT INTO attendance (uid, name, enter, timestamp_in, timestamp_out) ("+str(uid)+","+str(name)+","+str(enter)+","
+            +str(timestamp_in)+","+str(timestamp_out)+")"
+        cursor.execute(statement)
         connection.commit()
         print("Successfully added entry to database")
+        return 0
     except database.Error as e:
         print(f"Error adding entry to database: {e}")
+        return -1
 
 def get_dataname(uid):
     try:
-        #statement = "SELECT UNIQUE ID WHOSE NAME MATCHES ID#:%c"
-        #uid = str(uid)
         statement = "Select name FROM attendance WHERE uid="+str(uid)
-        #data = (uid)
         cursor.execute(statement)
         name = cursor.fetchone()
 
@@ -44,10 +41,8 @@ def get_dataname(uid):
     
 def get_dataenter(uid):
     try:
-        #statement = "SELECT UNIQUE ID WHOSE NAME MATCHES ID#:%c"
 
         statement = "SELECT enter FROM attendance WHERE uid="+str(uid)
-        #data = (uid)
         cursor.execute(statement)
         enter = cursor.fetchone()
 
