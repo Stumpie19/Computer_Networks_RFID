@@ -29,7 +29,7 @@ while True:
             connection.commit()
             print(f"Student {uid} successfully removed from database")
         except database.Error as e:
-            print(f"Error deleting entry from database: {e}")
+            print(f"Error deleting student from database: {e}")
         finally:
             connection.close()
             break
