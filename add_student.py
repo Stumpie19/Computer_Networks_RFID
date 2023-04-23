@@ -9,7 +9,6 @@ print("Scan RFID tag:")
 reader = RFID_Driver.RFID_READER()
 try:
     uid = reader.get_id()
-    print(uid)
 finally:
     GPIO.cleanup()
 print()
