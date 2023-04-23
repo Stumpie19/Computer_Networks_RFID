@@ -14,8 +14,7 @@ cursor = connection.cursor()
 
 def add_data(uid,name,enter,timestamp_in, timestamp_out):
     try:
-        statement = "INSERT INTO attendance (uid, name, enter, timestamp_in, timestamp_out) ("+str(uid)+","+str(name)+","+str(enter)+","
-            +str(timestamp_in)+","+str(timestamp_out)+")"
+        statement = "INSERT INTO attendance (uid, name, enter, timestamp_in, timestamp_out) VALUES ('"+str(uid)+"','"+str(name)+"',"+str(enter)+",'"+str(timestamp_in)+"','"+str(timestamp_out)+"')"
         cursor.execute(statement)
         connection.commit()
         print("Successfully added entry to database")

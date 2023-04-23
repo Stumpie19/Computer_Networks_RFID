@@ -3,6 +3,7 @@ import RFID_Driver
 import RPi.GPIO as GPIO
 import time
 from signal import signal, SIGTERM, SIGHUP, pause
+from rpi_lcd import LCD
 
 lcd = LCD()
 def safe_exit(signum, frame):
@@ -19,7 +20,6 @@ try:
     uid = reader.get_id()
 finally:
     GPIO.cleanup()
-print()
 
 lcd.clear()
 lcd.text("Enter name", 1)
@@ -39,7 +39,7 @@ else:
     lcd.clear()
     lcd.text("Error", 1)
 
-time.sleep(2)
+time.sleep(5)
 lcd.clear()
 signal(SIGTERM, safe_exit)
 signal(SIGHUP, safe_exit)

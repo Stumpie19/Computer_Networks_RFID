@@ -18,16 +18,14 @@ while True:
         reader = RFID_Driver.RFID_READER()
         try:
             uid = reader.get_id()
-            print(uid)
         finally:
             GPIO.cleanup()
-        print()
 
         try:
             statement = f"DELETE FROM attendance WHERE uid = '{uid}'"
             cursor.execute(statement)
             connection.commit()
-            print(f"Student {uid} successfully removed from database")
+            print(f"Student successfully removed from database")
         except database.Error as e:
             print(f"Error deleting student from database: {e}")
         finally:
