@@ -4,7 +4,6 @@ from database import get_dataname, get_dataenter, update_timestamp_in, update_ti
 import RFID_Driver
 import RPi.GPIO as GPIO
 import time
-from timestamp import localtime
 
 #From raspberry pi lcd library
 from rpi_lcd import LCD
@@ -14,19 +13,19 @@ lcd = LCD()
 def safe_exit(signum, frame):
     exit(1)
 try:
+    signal(SIGTERM, safe_exit)
+    signal(SIGHUP, safe_exit)
+
+    #Initialize RFID Reader/Driver
+    reader = RFID_Driver.RFID_READER()
+
     while True:
-        signal(SIGTERM, safe_exit)
-        signal(SIGHUP, safe_exit)
+        lcd.clear()
+        lcd.text("Scan RFID tag", 1)
 
-        #Initialize RFID Reader/Driver
-        reader = RFID_Driver.RFID_READER()
-
-        try:
-            #Fetch RFID
-            uid = reader.get_id()
-            print("\nuid = "+str(uid))
-        finally:
-            GPIO.cleanup()
+        #Fetch RFID
+        uid = reader.get_id()
+        print("\nuid = "+str(uid))
 
         #Get name and in/out values from MySQL database
         name = get_dataname(uid)
@@ -55,10 +54,12 @@ try:
             lcd.text(str(name), 2)
         else:
             #Throw error
+            print("Error user not found.")
             lcd.text("Error", 1)
             lcd.text(str(name), 2)
         time.sleep(2)
 except KeyboardInterrupt:
+    GPIO.cleanup()
     pass
 finally:
     lcd.clear()

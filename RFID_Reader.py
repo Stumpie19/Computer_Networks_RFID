@@ -200,7 +200,7 @@ class RFID:
         self.writeRFID(self.BitFramingReg, 0x00)#Reset the bitframing Register
 
         (status, backData, backBits) = self.sendToPICC(Command)#Send Command to PICC
-    
+       
         if (status == self.STATUS_OK):#if status is okay 
             i = 0
             if len(backData) == 5:#if length of uid is 5
@@ -248,7 +248,7 @@ class RFID:
         self.ClearBitMask(self.BitFramingReg, 0x80)#Set Bit 7 of BitFramingReg to active to disable transmission of data to PICC
 
         if i != 0:#if iterations did not run out as exit condition
-            if (self.readRFID(self.ErrorReg) & 0x1B) == 0x00:#Read error register and check bits for buffer overflow, bit collision detected, parity check failed, and check if SOF is incorrect. If any a 1 then error 
+            if (self.readRFID(self.ErrorReg) & 0x1A) == 0x00:#Read error register and check bits for buffer overflow, bit collision detected, and parity check failed. If any a 1 then error 
                 status = self.STATUS_OK
 
                 if n & irqEn & 0x01:#Check Error if timer got to 0 
@@ -266,7 +266,7 @@ class RFID:
                 if n > self.MAX_LEN:#if byte legth is greater than Max length used then set byte length to data used
                     n = self.MAX_LEN
 
-                for i in range(n):#read the correctnumber of bytes from the FIFO Data Buffer 
+                for i in range(n):#read the correct number of bytes from the FIFO Data Buffer 
                     backData.append(self.readRFID(self.FIFODataReg))#put data from FIFO Data Buffer in backData
             else:
                 status = self.STATUS_ERROR
