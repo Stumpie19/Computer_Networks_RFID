@@ -22,16 +22,15 @@ try:
 
         try:
             uid = reader.get_id()
-            print(uid)
+            print("\nuid = "+str(uid))
         finally:
             GPIO.cleanup()
 
         name = get_dataname(uid)
         enter = get_dataenter(uid)
-        print(str(enter))
         if enter == 0:
             update_timestamp_in(uid, int(time.time()))
-
+            print("Welcome "+str(name))
             lcd.text("Welcome,", 1)
 
             #Get name of attendee from database.py
@@ -39,7 +38,7 @@ try:
         
         elif enter == 1:
             update_timestamp_out(uid, int(time.time()))
-
+            print("Good-Bye "+str(name))
             lcd.text("Good-Bye", 1)
 
             #Get name of attendee from database.py

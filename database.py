@@ -17,6 +17,7 @@ def add_data(uid,name,enter,timestamp_in, timestamp_out):
         statement = "INSERT INTO attendance (uid, name, enter, timestamp_in, timestamp_out) VALUES ('"+str(uid)+"','"+str(name)+"',"+str(enter)+",'"+str(timestamp_in)+"','"+str(timestamp_out)+"')"
         cursor.execute(statement)
         connection.commit()
+        print("uid = "+str(uid))
         print("Successfully added entry to database")
         return 0
     except database.Error as e:
@@ -66,12 +67,13 @@ def delete_data(uid):
         statement = f"DELETE FROM attendance WHERE uid = '{uid}'"
         cursor.execute(statement)
         connection.commit()
+        print("uid = "+str(uid))
+        print("Successfully deleted entry to database")
     except database.Error as e:
         print(f"Error deleting entry from database: {e}")
 
 def update_timestamp_in(uid, timestamp_in):
     try:
-        #print(timestamp_in)
         statement = f"UPDATE attendance SET timestamp_in = '{timestamp_in}' WHERE uid = '{uid}'"
         cursor.execute(statement)
         connection.commit()

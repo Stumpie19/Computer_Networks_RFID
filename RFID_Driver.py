@@ -23,15 +23,12 @@ class RFID_READER:
       if status != self.READER.STATUS_OK:#Error Check
           return None
       
-      (status, uid) = self.READER.anticollisionPICC()#Perform Anticollision action to get uid of PICC
+      (status, uid_hex) = self.READER.anticollisionPICC()#Perform Anticollision action to get uid of PICC
       if status != self.READER.STATUS_OK:#Error Check 
           return None
       
-      return self.uid_to_decimal(uid)#Convert UID to decimal and return it
-  
-  #Convert unqiue ID of PICC from hexidecimal to decimal
-  def uid_to_decimal(self, uid):
-      n = 0
+      #Convert unqiue ID of PICC from hexidecimal to decimal
+      uid = 0
       for i in range(0, 5):#loop through uid hexidecimal
-          n = n * 256 + uid[i]#convert hexidecimal to uid
-      return n
+          uid = uid * 256 + uid_hex[i]#convert hexidecimal to uid
+      return uid
