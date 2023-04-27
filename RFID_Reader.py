@@ -206,9 +206,9 @@ class RFID:
             if len(backData) == 5:#if length of uid is 5
                 for i in range(4): #loop through uid data to check validity of data
                     uidCheck = uidCheck ^ backData[i] #exclusive or
-                if uidCheck != backData[4]: #Error check if last bit is not same as uidCheck 
+                if uidCheck != backData[4]: #Error if last Byte of backData doesn't equal exclusive error of first 4 Bytes(means uid is greater than 4 Bytes)
                     status = self.STATUS_ERROR
-            else: #if length of uid is not 5
+            else: #if data back is not 5 Bytes
                 status = self.STATUS_ERROR
         
         return (status, backData)
@@ -283,7 +283,7 @@ class RFID:
         self.writeRFID(self.BitFramingReg, 0x07)#Set TxLastBits[2:0] to not transmit last byte
         
         (status, backData, backBits) = self.sendToPICC(Command)#Send Request Command to PICCs
-
+       
         if ((status != self.STATUS_OK) | (backBits != 0x10)):#Check for Error
             status = self.STATUS_ERROR
         return (status, backBits)

@@ -24,11 +24,11 @@ class RFID_READER:
           return None
       
       (status, uid_hex) = self.READER.anticollisionPICC()#Perform Anticollision action to get uid of PICC
-      if status != self.READER.STATUS_OK:#Error Check 
+      if status != self.READER.STATUS_OK:#Error Check failed in anticollision function (case if uid is more than 4 Bytes)
           return None
       
       #Convert unqiue ID of PICC from hexidecimal to decimal
       uid = 0
-      for i in range(0, 5):#loop through uid hexidecimal
+      for i in range(0, (len(uid_hex)-1)):#loop through uid hexidecimal (last Byte of data not part of uid)
           uid = uid * 256 + uid_hex[i]#convert hexidecimal to uid
       return uid
