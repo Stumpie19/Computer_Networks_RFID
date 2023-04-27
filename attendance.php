@@ -10,7 +10,7 @@ body
 </style>
 <body>
   <!--Attendance Table Login Form !-->
-  <form action = attendance2.php method = "post" style ="text-align: center;" autocomplete="off">
+  <form action = attendance.php method = "post" style ="text-align: center;" autocomplete="off">
     <h1 align="center">Attendance Table</h1>
     <table border="1" align="center">
       <tr style = "text-align: center;">
