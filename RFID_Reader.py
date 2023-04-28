@@ -273,7 +273,7 @@ class RFID:
 
         return (status, backData, backLen)
     
-    #Request command for PICC. Invites PICCs in state IDLE to go to READY and prepare for anticollision or selection.
+    #Request command for PICC. Invites PICCs in state IDLE to go to READY and prepare for anticollision or selection. The PICC then responds back to the RFID reader so the RFID reader knows there is a PICC within range.
     def requestPICC(self):
         status = None #status variable
         backBits = None #amount of bits of data from PICC
