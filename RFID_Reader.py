@@ -220,7 +220,7 @@ class RFID:
         backLen = 0  #amount of bits of data from PICC
         status = self.STATUS_ERROR #set status to error
         irqEn = 0x77 #Bit to set in comIRQReg before transcieving command
-        waitIRq = 0x30 #Active bits of comIRQReg if command suggestively sent to PICC
+        waitIRq = 0x30 #Active bits of comIRQReg if command successfully sent to PICC
         lastBits = None #amount of bits of data used in last byte
         n = 0 #variable for reading from registers
 
@@ -234,7 +234,7 @@ class RFID:
         for i in range(len(sendData)):#Set Command to send to PICC in FIFO Data Buffer
             self.writeRFID(self.FIFODataReg, sendData[i])
 
-        self.writeRFID(self.CommandReg, command)#Execute passed command
+        self.writeRFID(self.CommandReg, command)#Execute transcieve command
 
         self.SetBitMask(self.BitFramingReg, 0x80)#Set Bit 7 of BitFramingReg to active to start transmission of data to PICC
 
