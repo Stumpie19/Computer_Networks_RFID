@@ -5,6 +5,7 @@ import spidev
 import signal
 import time
 
+#Class holds functions to control the MFRC522 to send commands to a PICC and get data (PICC's uid) back from the PICC 
 class RFID:
     MAX_LEN = 16 #length constant for Buffer that is used (buffer is 64 bytes)
     
