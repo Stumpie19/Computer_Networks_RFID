@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import RPi.GPIO as GPIO
-import spidev
-import signal
-import time
+import RPi.GPIO as GPIO#Library to Control Raspberry pi's GPIO pins
+import spidev#library to use SPI communication
 
 #Class holds functions to control the MFRC522 to send commands to a PICC and get data (PICC's uid) back from the PICC 
 class RFID:
@@ -109,8 +107,7 @@ class RFID:
     Reserved11 = 0x3D
     Reserved12 = 0x3E
     Reserved13 = 0x3F
-    
-    SerialNum = [] #Keep track of serial number
+   
     
     #Function for initialization of object to set up SPI connection with MFRC522
     def __init__(self, bus=0, device=0, pin_mode=10, pin_rst=-1):
