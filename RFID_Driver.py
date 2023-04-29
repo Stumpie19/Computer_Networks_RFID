@@ -1,22 +1,24 @@
 #!/usr/bin/env python
-import RFID_Reader
-import RPi.GPIO as GPIO
-     
+import RFID_Reader#use class from RFID_Reader.py to get 
+import RPi.GPIO as GPIO#Library to control GPIO pins of Raspberry pi
+
+#Class to use fucntions from the RFID class from RFID_Reader in order to request and recieve uid from an RFID tag or PICC
 class RFID_READER:
 
-  READER = None
+  READER = None#to create object of RFID ckass from RFID_Reader.py
   
+  #initialization function that runs when a object of class is created
   def __init__(self):
     self.READER = RFID_Reader.RFID()
     
   #get uid of PICC
   def get_id(self):
-    id = self.read_uid()
-    while not id:
+    id = self.read_uid()#request and get id from an RFID tag
+    while not id:#look until id from tag is valid
       id = self.read_uid()
     return id
 
-  #read uid of PICC
+  #request and read uid from RFID tag
   def read_uid(self):
       
       (status, TagType) = self.READER.requestPICC()#Send request command to PICC to move them from idle to ready state
